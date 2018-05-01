@@ -1,0 +1,13 @@
+projectPath: ./packExport
+expansionPath: .
+compileOnBuild: true
+ignoreAllErrors: true
+preJobApex:
+  Deploy: DeactivateTemplatesAndLayouts.cls
+manifestOnly: false
+queries:
+  - DataRaptor
+  - OmniScript
+delete: true
+activate: true
+maxDepth: -1

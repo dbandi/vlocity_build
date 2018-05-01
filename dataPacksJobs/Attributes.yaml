@@ -1,0 +1,23 @@
+projectPath: ./packExport
+expansionPath: .
+buildFile: AllDataPacks.json
+preStepApex:
+  Deploy:
+    VlocityUITemplate: DeactivateTemplatesAndLayouts.cls
+    VlocityUILayout: DeactivateTemplatesAndLayouts.cls
+postStepApex:
+  Deploy:
+    Product2: EPCProductJSONUpdate.cls
+queries:
+  - AttributeAssignmentRule
+  - AttributeCategory
+delete: true
+activate: true
+compileOnBuild: true
+maxDepth: -1
+continueAfterError: true
+defaultMaxParallel: 10
+exportPacksMaxSize: 10
+useAllRelationships: false
+supportHeadersOnly: true
+supportForceDeploy: true

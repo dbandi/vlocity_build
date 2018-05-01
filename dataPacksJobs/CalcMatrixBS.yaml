@@ -1,0 +1,17 @@
+projectPath: ./packExport
+expansionPath: .
+buildFile: AllDataPacks.json
+manifestOnly: true
+manifest: # Object defining Type and Export Data - Can be String or Object
+  CalculationMatrix:
+    - BS
+delete: true
+activate: true
+compileOnBuild: true
+maxDepth: -1
+continueAfterError: true
+defaultMaxParallel: 10
+exportPacksMaxSize: 10
+useAllRelationships: false
+supportHeadersOnly: true
+supportForceDeploy: true

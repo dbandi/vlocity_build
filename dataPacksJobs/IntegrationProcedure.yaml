@@ -1,0 +1,16 @@
+projectPath: ./packExport
+expansionPath: .
+buildFile: AllDataPacks.json
+manifest:
+  - IntegrationProcedure/Rating_RatingIntegration
+  - IntegrationProcedure/Product_ProductIntegration
+delete: true
+activate: true
+compileOnBuild: true
+maxDepth: -1
+continueAfterError: true
+defaultMaxParallel: 10
+exportPacksMaxSize: 10
+useAllRelationships: false
+supportHeadersOnly: true
+supportForceDeploy: true

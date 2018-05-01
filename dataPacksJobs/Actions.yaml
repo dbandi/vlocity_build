@@ -1,0 +1,15 @@
+projectPath: ./packExport
+expansionPath: .
+buildFile: AllDataPacks.json
+queries:
+  - VlocityAction
+delete: true
+activate: true
+compileOnBuild: true
+maxDepth: -1
+continueAfterError: true
+defaultMaxParallel: 10
+exportPacksMaxSize: 10
+useAllRelationships: false
+supportHeadersOnly: true
+supportForceDeploy: true
