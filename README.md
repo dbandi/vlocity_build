@@ -21,6 +21,24 @@ Vlocity Build is a command line tool to export and deploy Vlocity DataPacks in a
 # Installation Instructions
 -----------
 
+#grunt packExport -propertyfile build_sgapsdev1.properties  -job Attributes
+#grunt packDeploy -propertyfile build_vlocity.properties  -job Attributes
+
+#grunt packExportSingle -propertyfile build_sgapsdev1.properties -type OmniScript -id 'a3Z0R00000005KJUAY' -depth 0
+
+#grunt packExport -propertyfile build_sgapsdev1.properties  -job OmniScripts
+#grunt packDeploy -propertyfile build_vlocity.properties  -job OmniScripts
+
+#grunt packExport -propertyfile build_sgapsdev1.properties  -job DataRaptors
+#grunt packDeploy -propertyfile build_vlocity.properties  -job DataRaptors
+
+#grunt packUpdateSettings -propertyfile build_staging.properties  -job OmniScripts
+
+
+#vlocity packExport -job OmniScripts.yaml -propertyfile build_sgapsdev1.properties
+#vlocity packDeploy -job OmniScripts.yaml -propertyfile build_devops.properties
+
+
 ## Install Node.js  
 Download and Install Node at:  
 https://nodejs.org/  
@@ -65,14 +83,14 @@ The Job File used to define the project location and the various settings for ru
 
 Step by Step Guide
 ------------
-Once you have your `build_source.properties` file setup, you can get started with mirgation with the following: 
+Once you have your `build_source.properties` file setup, you can get started with mirgation with the following:
 
 ## Export
 Example.yaml shows the most Simple Job File that can be used to setup a project:
 ```yaml
-projectPath: ./example_vlocity_build 
-queries: 
-  - VlocityDataPackType: DataRaptor 
+projectPath: ./example_vlocity_build
+queries:
+  - VlocityDataPackType: DataRaptor
     query: Select Id from %vlocity_namespace%__DRBundle__c where Name = 'DataRaptor Migration' LIMIT 1
 ```
 
@@ -133,27 +151,27 @@ A Job File is similar to a Salesforce package.xml file, however it also includes
 
 The Job File's primary settings that you should define is specifying the folder that you would like to use to contain your project.  
 ```yaml
-projectPath: ../myprojectPath 
+projectPath: ../myprojectPath
 ```
 
 The projectPath can be the absolute path to a folder or the relative path from where you run the vlocity command.  
 
 ## What will be Exported?
-By default, all data will be exported from the org when running the `packExport` command. To narrow the exported data, you can define any Salesforce SOQL query that returns the Id of records you would like to export. 
+By default, all data will be exported from the org when running the `packExport` command. To narrow the exported data, you can define any Salesforce SOQL query that returns the Id of records you would like to export.
 ```yaml
-queries: 
-  - VlocityDataPackType: DataRaptor 
+queries:
+  - VlocityDataPackType: DataRaptor
     query: Select Id from %vlocity_namespace%__DRBundle__c where Name LIKE '%Migration' LIMIT 1
 ```
 
-This query will export a DataRaptor Vlocity DataPack by querying the SObject table for DataRaptor `DRBundle__c` and even supports the `LIMIT 1` and `LIKE` syntax. 
+This query will export a DataRaptor Vlocity DataPack by querying the SObject table for DataRaptor `DRBundle__c` and even supports the `LIMIT 1` and `LIKE` syntax.
 
 ## Example Job File
 #### dataPacksJobs/Example.yaml  
 ```yaml
-projectPath: ./example_vlocity_build 
-queries: 
-  - VlocityDataPackType: DataRaptor 
+projectPath: ./example_vlocity_build
+queries:
+  - VlocityDataPackType: DataRaptor
     query: Select Id from %vlocity_namespace%__DRBundle__c LIMIT 1
 ```
 
@@ -166,7 +184,7 @@ By Default, all DataPack Types will be Exported when running packExport, so to o
 ## Predefined vs Explicit Queries
 Vlocity has defined full queries for all Supported DataPack Types which will export all currently Active Vlocity Metadata. **This is the most simple way to define your own Job File queries.**
 
-To Export All DataRaptors and OmniScripts from the Org use: 
+To Export All DataRaptors and OmniScripts from the Org use:
 ```yaml
 projectPath: ./myprojectPath    
 queries:
@@ -197,7 +215,7 @@ Running `packExport` with no queries defined in your Job File will export all th
 Once Exported it is very important to validate that your data is in state that is ready to be deployed. The Vlocity Build tool primarily relies on unique data in fields across the different objects to prevent duplicate data being uploaded.
 
 ## Errors
-Generally errors will be due to missing or incorrect references to other objects. 
+Generally errors will be due to missing or incorrect references to other objects.
 ```
 Error >> DataRaptor --- GetProducts --- Not Found
 Error >> VlocityUITemplate --- ShowProducts --- Not Found
@@ -210,7 +228,7 @@ Errors occurring during Export will likely result in Errors during deploy. But n
 Deploy Error >> Product2/02d3feaf-a390-2f57-a08c-2bfc3f9b7333 --- iPhone --- No match found for vlocity_cmt__ProductChildItem__c.vlocity_cmt__ChildProductId__c - vlocity_cmt__GlobalKey__c=db65c1c5-ada4-7952-6aa5-8a6b2455ea02
 ```
 
-In this Error the Product being deployed is the iPhone with Global Key `02d3feaf-a390-2f57-a08c-2bfc3f9b7333` and the error is stating that one of the Product Child Items could not find the referenced product with Global Key `db65c1c5-ada4-7952-6aa5-8a6b2455ea02`. This means the other Product must also be deployed. 
+In this Error the Product being deployed is the iPhone with Global Key `02d3feaf-a390-2f57-a08c-2bfc3f9b7333` and the error is stating that one of the Product Child Items could not find the referenced product with Global Key `db65c1c5-ada4-7952-6aa5-8a6b2455ea02`. This means the other Product must also be deployed.
 
 Additionally, Deploys will run all of the Triggers associated with Objects during their import. As their are various rules across the Vlocity Data Model, sometimes errors will occur due to attempts to create what is considered "bad data". These issues must be fixed on a case by case basis.
 
@@ -220,17 +238,17 @@ This tool includes a script to help find and eliminate "bad data". It can be run
 vlocity -propertyfile <propertyfile> -job <job> runJavaScript -js cleanData.js
 ```
 
-This will run Node.js script that Adds Global Keys to all SObjects missing them, and deletes a number of Stale data records that are missing data to make them useful. 
+This will run Node.js script that Adds Global Keys to all SObjects missing them, and deletes a number of Stale data records that are missing data to make them useful.
 
-## External Ids and Global Keys 
+## External Ids and Global Keys
 Most objects being deployed have a field or set of fields used to find unique records like an External Id in Salesforce. For many Vocity Objects this is the Global Key field. If a Deploy finds 1 object matching the Global Key then it will overwrite that object during deploy. If it finds more than 1 then it will throw an error:
 ```
 Deploy Error >> Product2/02d3feaf-a390-2f57-a08c-2bfc3f9b7333 --- iPhone --- Duplicate Results found for Product2 WHERE vlocity_cmt__GlobalKey__c=02d3feaf-a390-2f57-a08c-2bfc3f9b7333 - Related Ids: 01t1I000001ON3qQAG,01t1I000001ON3xQAG
 ```
 
-This means that Duplicates have been created in the org and the data must be cleaned up. 
+This means that Duplicates have been created in the org and the data must be cleaned up.
 
-While there are protections against missing or duplicate Global Keys the logic is often in triggers which may have at points been switched off, and sometimes applies to data that may have existed before the Vlocity Package was installed. 
+While there are protections against missing or duplicate Global Keys the logic is often in triggers which may have at points been switched off, and sometimes applies to data that may have existed before the Vlocity Package was installed.
 
 You can fix missing GlobalKeys by running the following command which will start a set of Batch Jobs to add Global Keys to any Objects which are missing them:
 ```bash
@@ -240,7 +258,7 @@ vlocity -propertyfile <propertyfile> -job <job> runApex -apex AllGlobalKeysBatch
 However, when you are attempting to migrate data from one org to another where both orgs have missing GlobalKeys, but existing data that should not be duplicated, a different strategy may need to be used to produce GlobalKeys that match between orgs.
 
 ## Validation
-Ultimately the best validation for a deploy will be testing the functionality directly in the org. However, another way to see any very clear potential issues is to see if recently deployed data matches exactly what was just exported. 
+Ultimately the best validation for a deploy will be testing the functionality directly in the org. However, another way to see any very clear potential issues is to see if recently deployed data matches exactly what was just exported.
 
 You can run the following command to check the current local data against the data that exists in the org you deployed to:
 ```bash
@@ -258,11 +276,11 @@ This will provide a list of files that are different locally than in the org. In
 `packExportAllDefault`: Export All Default DataPacks as listed in Supported Types Table  
 `packDeploy`: Deploy all contents of a DataPacks Directory  
 
-## Troubleshooting 
+## Troubleshooting
 `packContinue`: Continues a job that failed due to an error  
 `packRetry`: Continues a Job retrying all deploy errors or re-running all export queries  
 
-## Additional 
+## Additional
 `packGetDiffsAndDeploy`: Deploy only files that are modified compared to the target Org  
 `packGetDiffs`: Find all Diffs in Org Compared to Local Files   
 `packBuildFile`: Build a DataPacks Directory into a DataPack file   
@@ -319,7 +337,7 @@ vlocity -propertyfile <filepath> -job <filepath> packGetDiffs
 ```
 
 ### packGetDiffsAndDeploy
-`packGetDiffsAndDeploy` will first find all files that are different locally than in the target Org, and then will deploy only the DataPacks that have changed or are new. 
+`packGetDiffsAndDeploy` will first find all files that are different locally than in the target Org, and then will deploy only the DataPacks that have changed or are new.
 ```bash
 vlocity -propertyfile <filepath> -job <filepath> packGetDiffsAndDeploy
 ```
@@ -327,7 +345,7 @@ While this may take longer than doing an actual deploy, it is a great way to ens
 
 # Advanced Job File Settings
 ------------
-The Job File has a number of additonal runtime settings that can be used to define your project and aid in making Exports / Deploys run successfully. However, the Default settings should only be modified to account for unique issues in your Org. 
+The Job File has a number of additonal runtime settings that can be used to define your project and aid in making Exports / Deploys run successfully. However, the Default settings should only be modified to account for unique issues in your Org.
 
 ## Basic  
 ```yaml
@@ -335,8 +353,8 @@ projectPath: ../my-project # Where the project will be contained. Use . for this
 expansionPath: datapack-expanded # The Path relative to the projectPath to insert the expanded files. Also known as the DataPack Directory in this Doecumentation
 ```
 
-## Export 
-Exports can be setup as a series of queries or a manifest. 
+## Export
+Exports can be setup as a series of queries or a manifest.
 
 ## Export by Queries
 Queries support full SOQL to get an Id for each DataPackType. You can have any number of queries in your export. SOQL Queries can use `%vlocity_namespace%__` to be namespace independent or the namespace of your Vlocity Package can be used.
@@ -349,10 +367,10 @@ queries:
 
 **Export by Predefined Queries is the recommened approach for defining your Project and you can mix the predefined and explicit queries as shown above**
 
-## Export Results 
-The primary use of this tool is to write the results of the Export to the local folders at the expansionPath. There is a large amount of post processing to make the results from Salesforce as Version Control friendly as possible. 
+## Export Results
+The primary use of this tool is to write the results of the Export to the local folders at the expansionPath. There is a large amount of post processing to make the results from Salesforce as Version Control friendly as possible.
 
-Additionally, an Export Build File can be created as part of an Export. It is a single file with all of the exported DataPack Data in it with no post processing. 
+Additionally, an Export Build File can be created as part of an Export. It is a single file with all of the exported DataPack Data in it with no post processing.
 ```yaml
 exportBuildFile: AllDataPacksExported.json
 ```
@@ -360,14 +378,14 @@ exportBuildFile: AllDataPacksExported.json
 This file is not Importable to a Salesforce Org through the DataPacks API, but could be used to see the full raw output from a Salesforce Org. Instead, use the BuildFile task to create an Importable file.
 
 ## Advanced: Export by Manifest
-The manifest defines the Data used to export. Not all types will support using a manifest as many types are only unique by their Id. VlocityDataPackTypes that are unique by name will work for manifest. These are limited to: DataRaptor, VlocityUITemplate, VlocityCard, 
+The manifest defines the Data used to export. Not all types will support using a manifest as many types are only unique by their Id. VlocityDataPackTypes that are unique by name will work for manifest. These are limited to: DataRaptor, VlocityUITemplate, VlocityCard,
 ```yaml
-manifest: 
+manifest:
   VlocityCard:
-    - Campaign-Story 
-  OmniScript: 
-    - Type: Insurance 
-      Sub Type: Billing 
+    - Campaign-Story
+  OmniScript:
+    - Type: Insurance
+      Sub Type: Billing
       Language: English
 ```
 
@@ -376,11 +394,11 @@ manifest:
 ## BuildFile  
 This specifies a File to create from the DataPack Directory. It could then be uploaded through the DataPacks UI in a Salesforce Org.
 ```yaml
-buildFile: ProductInfoPhase3.json 
+buildFile: ProductInfoPhase3.json
 ```
 
 ## Anonymous Apex  
-Vlocity has identified the Anonymous Apex that should run during most Deploys. It is not necessary to change these settings unless you want to change the default behavior. Currently the Vlocity Templates and Vlocity Cards will be deactivated before Deploy, and Products will have their Attribute JSON Generated after Deploy. 
+Vlocity has identified the Anonymous Apex that should run during most Deploys. It is not necessary to change these settings unless you want to change the default behavior. Currently the Vlocity Templates and Vlocity Cards will be deactivated before Deploy, and Products will have their Attribute JSON Generated after Deploy.
 
 Anonymous Apex will run before and After a Job by job type and before each step of a Deploy. Available types are Import, Export, Deploy, BuildFile, and ExpandFile. Apex files live in vlocity_build/apex. You can include multiple Apex files with "//include FileName.cls;" in your .cls file.
 ```yaml
@@ -390,10 +408,10 @@ preJobApex:
 
 With this default setting, the Apex Code in DeativateTemplatesAndLayouts.cls will run before the deploy to the org. In this case it will Deactivate the Vlocity Templates and Vlocity UI Layouts (Cards) associated with the Deploy. See Advanced Anonymous Apex for more details.
 
-## Additional Options 
+## Additional Options
 The Job file additionally supports some Vlocity Build based options and the options available to the DataPacks API. All Options can also be passed in as Command Line Options with `-optionName <value>` or `--optionName` for Boolean values.
 
-## All Options 
+## All Options
 | Option | Description | Type  | Default |
 | ------------- |------------- |----- | -----|
 | compileOnBuild  | Compiled files will not be generated as part of this Export. Primarily applies to SASS files currently | Boolean | false |
@@ -402,7 +420,7 @@ The Job file additionally supports some Vlocity Build based options and the opti
 | activate | Will Activate everything after it is imported / deployed | Boolean | false |
 | maximumDeployCount | The maximum number of items in a single Deploy. Setting this to 1 combined with using preStepApex can allow Deploys that act against a single DataPack at a time | Integer | 1000
 | defaultMaxParallel | The number of parallel processes to use for export | Integer | 1
-| exportPacksMaxSize | Split DataPack export once it reaches this threshold | Integer | null | 
+| exportPacksMaxSize | Split DataPack export once it reaches this threshold | Integer | null |
 | continueAfterError | Don't end vlocity job on error | Boolean | false |
 | supportForceDeploy | Attempt to deploy DataPacks which have not had all their parents successfully deployed | Boolean | false |
 | supportHeadersOnly | Attempt to deploy a subset of data for certain DataPack types to prevent blocking due to Parent failures | Boolean | false |
@@ -418,57 +436,57 @@ The Job file additionally supports some Vlocity Build based options and the opti
 | processMultiple | When false each Export or Import will run individually | Boolean | true |
 
 # Supported DataPack Types
-These types are what would be specified when creating a Query or Manifest for the Job. 
+These types are what would be specified when creating a Query or Manifest for the Job.
 
 | VlocityDataPackType | SObject | Label |
-| ------------- |-------------| ----- | 
-| Attachment | Attachment | Attachment | 
-| AttributeAssignmentRule | AttributeAssignmentRule__c | Attribute Assignment Rule | 
-| AttributeCategory | AttributeCategory__c | Attribute Category | 
-| CalculationMatrix | CalculationMatrix__c | Calculation Matrix | 
-| CalculationProcedure | CalculationProcedure__c | Calculation Procedure | 
-| ContextAction | ContextAction__c | Context Action | 
-| ContextDimension | ContextDimension__c | Vlocity Context Dimension | 
-| ContextScope | ContextScope__c | Context Scope | 
-| ContractType | ContractType__c | Contract Type | 
-| DataRaptor | DRBundle__c | DataRaptor Interface | 
-| Document | Document | Document (Salesforce Standard Object) | 
-| DocumentClause | DocumentClause__c | Document Clause | 
-| DocumentTemplate | DocumentTemplate__c | Document Template | 
-| EntityFilter | EntityFilter__c | Entity Filter | 
-| ItemImplementation | ItemImplementation__c | Item Implementation | 
-| ManualQueue | ManualQueue__c | Manual Queue | 
-| ObjectClass | ObjectClass__c | Object Layout | 
-| ObjectContextRule | ObjectRuleAssignment__c | Vlocity Object Rule Assignment | 
-| ObjectLayout | ObjectLayout__c | Object Layout | 
-| OmniScript | OmniScript__c | OmniScript | 
-| OrchestrationDependencyDefinition | OrchestrationDependencyDefinition__c | Orchestration Dependency Definition | 
-| OrchestrationItemDefinition | OrchestrationItemDefinition__c | Orchestration Item Definition | 
-| OrchestrationPlanDefinition | OrchestrationPlanDefinition__c | Orchestration Plan Definition | 
-| Pricebook2 | Pricebook2 | Pricebook (Salesforce Standard Object) | 
-| PriceList | PriceList__c | Price List | 
-| PricingVariable | PricingVariable__c | Pricing Variable | 
-| Product2 | Product2 | Product (Salesforce Standard Object) | 
-| Promotion | Promotion__c | Promotion | 
-| QueryBuilder | QueryBuilder__c | Query Builder | 
-| Rule | Rule__c | Rule | 
-| StoryObjectConfiguration | StoryObjectConfiguration__c | Story Object Configuration (Custom Setting) | 
-| System | System__c | System | 
-| TimePlan | TimePlan__c | Time Plan | 
-| TimePolicy | TimePolicy__c | Time Policy | 
-| UIFacet | UIFacte__c | UI Facet | 
-| UISection | UISection__c | UI Section | 
-| VlocityAction | VlocityAction__c | Vlocity Action | 
-| VlocityAttachment | VlocityAttachment__c | Vlocity Attachment | 
-| VlocityCard | VlocityCard__c | Vlocity Card | 
-| VlocityFunction | VlocityFunction__c | Vlocity Function | 
-| VlocityPicklist | Picklist__c | Vlocity Picklist | 
-| VlocitySearchWidgetSetup | VlocitySearchWidgetSetup__c | Vlocity Interaction Launcher | 
-| VlocityStateModel | VlocityStateModel__c | Vlocity State Model | 
-| VlocityUILayout | VlocityUILayout__c | Vlocity UI Layout | 
-| VlocityUITemplate | VlocityUITemplate__c | Vlocity UI Template | 
-| VqMachine | VqMachine__c | Vlocity Intelligence Machine | 
-| VqResource | VqResource__c | Vlocity Intelligence Resource | 
+| ------------- |-------------| ----- |
+| Attachment | Attachment | Attachment |
+| AttributeAssignmentRule | AttributeAssignmentRule__c | Attribute Assignment Rule |
+| AttributeCategory | AttributeCategory__c | Attribute Category |
+| CalculationMatrix | CalculationMatrix__c | Calculation Matrix |
+| CalculationProcedure | CalculationProcedure__c | Calculation Procedure |
+| ContextAction | ContextAction__c | Context Action |
+| ContextDimension | ContextDimension__c | Vlocity Context Dimension |
+| ContextScope | ContextScope__c | Context Scope |
+| ContractType | ContractType__c | Contract Type |
+| DataRaptor | DRBundle__c | DataRaptor Interface |
+| Document | Document | Document (Salesforce Standard Object) |
+| DocumentClause | DocumentClause__c | Document Clause |
+| DocumentTemplate | DocumentTemplate__c | Document Template |
+| EntityFilter | EntityFilter__c | Entity Filter |
+| ItemImplementation | ItemImplementation__c | Item Implementation |
+| ManualQueue | ManualQueue__c | Manual Queue |
+| ObjectClass | ObjectClass__c | Object Layout |
+| ObjectContextRule | ObjectRuleAssignment__c | Vlocity Object Rule Assignment |
+| ObjectLayout | ObjectLayout__c | Object Layout |
+| OmniScript | OmniScript__c | OmniScript |
+| OrchestrationDependencyDefinition | OrchestrationDependencyDefinition__c | Orchestration Dependency Definition |
+| OrchestrationItemDefinition | OrchestrationItemDefinition__c | Orchestration Item Definition |
+| OrchestrationPlanDefinition | OrchestrationPlanDefinition__c | Orchestration Plan Definition |
+| Pricebook2 | Pricebook2 | Pricebook (Salesforce Standard Object) |
+| PriceList | PriceList__c | Price List |
+| PricingVariable | PricingVariable__c | Pricing Variable |
+| Product2 | Product2 | Product (Salesforce Standard Object) |
+| Promotion | Promotion__c | Promotion |
+| QueryBuilder | QueryBuilder__c | Query Builder |
+| Rule | Rule__c | Rule |
+| StoryObjectConfiguration | StoryObjectConfiguration__c | Story Object Configuration (Custom Setting) |
+| System | System__c | System |
+| TimePlan | TimePlan__c | Time Plan |
+| TimePolicy | TimePolicy__c | Time Policy |
+| UIFacet | UIFacte__c | UI Facet |
+| UISection | UISection__c | UI Section |
+| VlocityAction | VlocityAction__c | Vlocity Action |
+| VlocityAttachment | VlocityAttachment__c | Vlocity Attachment |
+| VlocityCard | VlocityCard__c | Vlocity Card |
+| VlocityFunction | VlocityFunction__c | Vlocity Function |
+| VlocityPicklist | Picklist__c | Vlocity Picklist |
+| VlocitySearchWidgetSetup | VlocitySearchWidgetSetup__c | Vlocity Interaction Launcher |
+| VlocityStateModel | VlocityStateModel__c | Vlocity State Model |
+| VlocityUILayout | VlocityUILayout__c | Vlocity UI Layout |
+| VlocityUITemplate | VlocityUITemplate__c | Vlocity UI Template |
+| VqMachine | VqMachine__c | Vlocity Intelligence Machine |
+| VqResource | VqResource__c | Vlocity Intelligence Resource |
 
 # Advanced
 ---------------------
@@ -479,7 +497,7 @@ In order to make the Anonymous Apex part reusable, you can include multiple Apex
 ### Namespace
 In Anonymous apex vlocity_namespace will be replaced with the vlocity.namespace from the propertyfile.
 
-### BaseUtilities.cls 
+### BaseUtilities.cls
 ```java
 List<Object> dataSetObjects = (List<Object>)JSON.deserializeUntyped('CURRENT_DATA_PACKS_CONTEXT_DATA');
 
@@ -497,28 +515,28 @@ for (Object obj : dataSetObjects)
 The token CURRENT_DATA_PACKS_CONTEXT_DATA will be replaced with JSON data and converted into a List<Map<String, Object>> with data depending on the type of setting and type of job being run.
 
 ### PreJobApex
-Pre Job Apex can run Anonymous Apex before the DataPack Job starts. While it is possible to use the CURRENT_DATA_PACKS_CONTEXT_DATA described above, for large projects it will be over the 32000 character limit for Anonymous Apex. 
+Pre Job Apex can run Anonymous Apex before the DataPack Job starts. While it is possible to use the CURRENT_DATA_PACKS_CONTEXT_DATA described above, for large projects it will be over the 32000 character limit for Anonymous Apex.
 
 ### preJobApex vs preStepApex
-preStepApex will send only the DataPack context data for the currently running API call. For Deploys, this means that instead of Deactivating all Templates and Layouts for an entire project before beginning a full deploy, using the same provided DeactivateTemplatesAndLayouts.cls as preStepApex, the target Salesforce Org will be minimally impacted as each Template or Card will only be Deactivated while it is being deployed. Best when combined with the maximumDeployCount of 1. 
+preStepApex will send only the DataPack context data for the currently running API call. For Deploys, this means that instead of Deactivating all Templates and Layouts for an entire project before beginning a full deploy, using the same provided DeactivateTemplatesAndLayouts.cls as preStepApex, the target Salesforce Org will be minimally impacted as each Template or Card will only be Deactivated while it is being deployed. Best when combined with the maximumDeployCount of 1.
 
 postStepApex can be used to run any compilation steps in Apex that are not automatically run inside triggers. EPCProductJSONUpdate.cls is recommended to be run when Deploying Products.
 
 #### Pre and Post Job JavaScript
-Like Pre and Post Job Apex you can also run JavaScript against the project with the preJobJavaScript, postJobJavaScript in tyour Job File. 
+Like Pre and Post Job Apex you can also run JavaScript against the project with the preJobJavaScript, postJobJavaScript in tyour Job File.
 
 Your JavaScript file should implement:
 ```javascript
 /**
- * 
+ *
  * @param {object} vlocity - This is the vlocity.js object. You can use vlocity.jsForceConnection for access to the current JSForce Session.
- * 
+ *
  * @param {object} currentContextData - For preJobJavaScript this is null. For postJobJavaScript this will be a full list of records processed during the job.
- * 
+ *
  * @param {object} jobInfo - This is the entire job state
- * 
+ *
  * @param {function} callback - Callback - Must be called
- */ 
+ */
 
 module.exports = function(vlocity, currentContextData, jobInfo, callback) {
   // Your Code Here
@@ -529,8 +547,8 @@ module.exports = function(vlocity, currentContextData, jobInfo, callback) {
 If Exporting with a Manifest, each JSON Object will be one entry in the Manifest in the form of:
 ```yaml
 manifest:
-  VlocityCard: 
-    - Campaign-Story 
+  VlocityCard:
+    - Campaign-Story
 ```
 ```json
 {
@@ -540,9 +558,9 @@ manifest:
 ```
 "Id" is the default JSON key in the Manifest, but Manifests also support YAML Key/Value pair syntax:
 ```yaml
-manifest: 
-  OmniScript: 
-    - Type: Insurance 
+manifest:
+  OmniScript:
+    - Type: Insurance
       SubType: Billing
       Language: English
 ```
@@ -559,9 +577,9 @@ Which becomes:
 ##### Export by Queries
 For a Query, each result from the Query will be a JSON Object with the appropriate DataPack Type.
 ```yaml
-queries: 
-  - VlocityDataPackType: VlocityUITemplate 
-    query: Select Id from %vlocity_namespace%__VlocityUITemplate__c where Name LIKE 'campaign%' # SOQL 
+queries:
+  - VlocityDataPackType: VlocityUITemplate
+    query: Select Id from %vlocity_namespace%__VlocityUITemplate__c where Name LIKE 'campaign%' # SOQL
 ```
 
 Becomes:
@@ -700,7 +718,7 @@ The tool will return JSON is sent the argument `--json` or `--json-pretty` and w
 }    
 ```
 
-Where each record contains the VlocityDataPackKey that was Exported / Deployed, and the Export / Deploy will be limited to only VlocityDataPackKeys passed in as part of the manifest if it is supplied. 
+Where each record contains the VlocityDataPackKey that was Exported / Deployed, and the Export / Deploy will be limited to only VlocityDataPackKeys passed in as part of the manifest if it is supplied.
 
 A Deploy will always only include the `-manifest` keys, however for an Export it will be defauly include dependencies unless `-maxDepth 0` is used as an argument.
 
@@ -735,44 +753,43 @@ In this case the settings for Product2 include:
 FilterFields:
 - AttributeMetadata__c
 - ImageId__c
-- JSONAttribute__c 
+- JSONAttribute__c
 ```
 
-Filter Fields describes fields that will be removed from the JSON before writing to the file system. This is generally due to them being or containing Salesforce Id's that cannot be replaced during export and are not Version Control friendly. 
+Filter Fields describes fields that will be removed from the JSON before writing to the file system. This is generally due to them being or containing Salesforce Id's that cannot be replaced during export and are not Version Control friendly.
 ```yaml
 FolderName:
-- GlobalKey__c 
+- GlobalKey__c
 ```
 
-Folder Name is the field which contains the name of the folder where the Product2 will be written. This is seperate from the file name as the folder must be unique, but the file should be readable. In most cases the Folder Name is the Global / Unique Key for the Object such that it should never change no matter what else changes in the object. 
+Folder Name is the field which contains the name of the folder where the Product2 will be written. This is seperate from the file name as the folder must be unique, but the file should be readable. In most cases the Folder Name is the Global / Unique Key for the Object such that it should never change no matter what else changes in the object.
 ```yaml
 JsonFields:
 - CategoryData__c
 ```
 
-JsonFields is a list of fields on the SObject which should be written as formatted JSON as opposed to a String when writing to a file. 
+JsonFields is a list of fields on the SObject which should be written as formatted JSON as opposed to a String when writing to a file.
 
 The following full list of settings are supported:
 
-| Setting | Type | Default | Description | 
-| --- | --- | --- | --- | 
-| SortFields | Array | "Hash" | The fields used to sort lists of SObjects to make the sort as consistent as possible.<br/>**Valid Values:** Fields on the SObject (ie Name, Type__c, etc) | 
+| Setting | Type | Default | Description |
+| --- | --- | --- | --- |
+| SortFields | Array | "Hash" | The fields used to sort lists of SObjects to make the sort as consistent as possible.<br/>**Valid Values:** Fields on the SObject (ie Name, Type__c, etc) |
 | DoNotExpand | Boolean | false | Skip expanding the DataPack into Multiple Files. |
-| FilterFields | Array | none | Fields to remove before writing to files.<br/>**Valid Values:** Fields on SObject | 
-| FileName | Array | Name | Fields used to create the File Names for an SObject.<br/>**Valid Values:** Fields on SObject or "_String" to add a Literal | 
+| FilterFields | Array | none | Fields to remove before writing to files.<br/>**Valid Values:** Fields on SObject |
+| FileName | Array | Name | Fields used to create the File Names for an SObject.<br/>**Valid Values:** Fields on SObject or "_String" to add a Literal |
 | SourceKeyFields | Array | Name | Fields used to build the readable key for a single SObject <br/>**Valid Values:**  Fields on SObject or "_String" to add a Literal |
 | SourceKeyGenerationFields | Array | none | Fields used to Generate a new Source Key when addSourceKeys: true<br/>**Valid Values:** Fields on SObject |
-| MatchingSourceKeyDefinition | Array | none | Fields used to build the readable key for a single SObject when it is a Matching Key node.<br/>**Valid Values:** Fields on SObject or "_String" to add a Literal | 
-| FolderName | Array | Name | Fields used to create the Folder Name for an SObject.<br/>**Valid Values:** Fields on SObject or "_String" to add a Literal | 
-| FileType | String | json | Field or String used to determine the File Type when creating a file.<br/>**Valid Values:** Fields on SObject or a string for a literal | 
-| JsonFields | String | none | JsonFields is a list of fields on the SObject which should be written as formatted JSON as opposed to a String when writing to a file.<br/>**Valid Values:** Fields on SObject | 
-| ReplacementFields | Object | none | Fields that should be replaced with values from other fields.<br/>**Valid Values:** Key is Target Field - Value is Field to Replace with or "_String" for literals | 
+| MatchingSourceKeyDefinition | Array | none | Fields used to build the readable key for a single SObject when it is a Matching Key node.<br/>**Valid Values:** Fields on SObject or "_String" to add a Literal |
+| FolderName | Array | Name | Fields used to create the Folder Name for an SObject.<br/>**Valid Values:** Fields on SObject or "_String" to add a Literal |
+| FileType | String | json | Field or String used to determine the File Type when creating a file.<br/>**Valid Values:** Fields on SObject or a string for a literal |
+| JsonFields | String | none | JsonFields is a list of fields on the SObject which should be written as formatted JSON as opposed to a String when writing to a file.<br/>**Valid Values:** Fields on SObject |
+| ReplacementFields | Object | none | Fields that should be replaced with values from other fields.<br/>**Valid Values:** Key is Target Field - Value is Field to Replace with or "_String" for literals |
 | NonUnique | Boolean | false | Declares that an SObject's data will always be created new during Deploy and will never be referenced by other objects and therefore does not need to keep extra metadata
 | PaginationSize | Integer | 1000 | Declares that an SObject should Paginate during Deploy
 | RemoveNullValues | Boolean | false | Delete all null values from JSON. Similar to NonUnique it will be created new, but can be referenced by other Objects
-| UnhashableFields | Array | none | Fields that should not be used for Checking Diffs as they are largely informational.<br/>**Valid Values:** Fields on SObject | 
+| UnhashableFields | Array | none | Fields that should not be used for Checking Diffs as they are largely informational.<br/>**Valid Values:** Fields on SObject |
 | SupportParallel | Boolean | true | Turn on / off parallel processing when Deploying the DataPack Type. Necessary when Master-Detail Parent might be shared with other DataPacks
 | MaxDeploy | Integer | 50 | Specify the maximum number of DataPacks which should be uploaded in a single transaction
 | HeadersOnly | Boolean | false | Support uploading only the top level SObject in the DataPack. Good for potentially fixing circular reference issues
 | ExportGroupSize | Integer | 5 | Specify the maximum number of DataPacks which should be Exported in a single transaction. Potentially large DataPacks like Matrix or Attachments could be set to 1 if necessary
- 

@@ -1,13 +1,13 @@
-projectPath: ./example_vlocity_build
+projectPath: ./packExport
 expansionPath: .
 buildFile: AllDataPacks.json
 preStepApex:
-  Deploy: 
+  Deploy:
     VlocityUITemplate: DeactivateTemplatesAndLayouts.cls
     VlocityUILayout: DeactivateTemplatesAndLayouts.cls
 postStepApex:
-  Deploy: 
-    Product2: EPCProductJSONUpdate.cls      
+  Deploy:
+    Product2: EPCProductJSONUpdate.cls
 queries:
   - AttributeAssignmentRule
   - AttributeCategory
